@@ -1,0 +1,10 @@
+task-ape
+
+Per eseguire l'esempio: 
+
+- compilare il file task-ape.c (comando make);
+- inserire il modulo rtai_hal.ko (presente in /usr/realtime/modules)
+- inserire il module rtai_sched.ko (presente in /usr/realtime/modules)
+- inserire il modulo task-ape_rt.ko prodotto dalla compilazione
+- dopo l'esecuzione, rimuovere tutti i moduli in ordine inversos
+
