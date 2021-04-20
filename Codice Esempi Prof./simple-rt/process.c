@@ -12,7 +12,6 @@
 
 #include "parameters.h"
 
- 
 
 static RT_TASK my_task;
 
