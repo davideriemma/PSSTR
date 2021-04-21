@@ -2,7 +2,7 @@
 
 #include <linux/module.h>
 
-#include <asm/io.h>
+#include <sys/io.h>  //asm/io.h has been moved to -> sys/io.h
 
 #include <asm/rtai.h>
 
