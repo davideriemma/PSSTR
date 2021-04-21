@@ -34,7 +34,7 @@ static void fun(int t)
         if ((count%10)==0){ 
 		val = val + 1;
 		val = val % 2;
-	}
+	    }
 
         data->value = val;
 
