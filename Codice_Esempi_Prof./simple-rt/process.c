@@ -76,5 +76,6 @@ void cleanup_module(void)
 
 }
 
-/*evitiamo di avvelenare il kernel*/
+/*evitiamo di avvelenare il kernel -> anche se continua a non funzionare. L'avvelenamento del kernel
+è sicuro provenga dal modulo rt_process*/
 MODULE_LICENSE("GPL");
