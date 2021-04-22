@@ -1,1 +1,0 @@
-cmd_/home/davide/workspace/PSSTR/Codice_Esempi_Prof./simple-rt/rt_process.o := ld -m elf_x86_64  -z max-page-size=0x200000   -r -o /home/davide/workspace/PSSTR/Codice_Esempi_Prof./simple-rt/rt_process.o /home/davide/workspace/PSSTR/Codice_Esempi_Prof./simple-rt/process.o 

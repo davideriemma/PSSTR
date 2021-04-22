@@ -2,6 +2,8 @@
 
 #include <linux/module.h>
 
+#include <linux/init.h>
+
 #include <asm/io.h>
 
 #include <asm/rtai.h>
@@ -73,3 +75,6 @@ void cleanup_module(void)
     return;
 
 }
+
+/*evitiamo di avvelenare il kernel*/
+MODULE_LICENSE("GPL");

@@ -29,8 +29,8 @@ clean:
 #process.o: process.c scope
 #	$(CC) $(MODULE_CFLAGS) -c $<
 
-#scope: scope.c
-#	$(CC) -o $@ $<
+scope: scope.c
+	$(CC) -o $@ $<
 
 
 #clean:
