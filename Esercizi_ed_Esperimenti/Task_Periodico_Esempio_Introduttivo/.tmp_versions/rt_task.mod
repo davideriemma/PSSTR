@@ -1,0 +1,3 @@
+/home/davide/workspace/PSSTR/Esercizi_ed_Esperimenti/Task_Periodico_Esempio_Introduttivo/rt_task.ko
+/home/davide/workspace/PSSTR/Esercizi_ed_Esperimenti/Task_Periodico_Esempio_Introduttivo/rt_task.o
+
