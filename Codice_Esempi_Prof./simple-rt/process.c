@@ -2,7 +2,7 @@
 
 #include <linux/module.h>
 
-#include <sys/io.h>  //asm/io.h has been moved to -> sys/io.h
+#include <asm/io.h>
 
 #include <asm/rtai.h>
 
@@ -17,10 +17,7 @@ static RT_TASK my_task;
 
 static struct data_str *data;
 
- 
-
 static void fun(int t)
-
 {
 
     unsigned int count = 0;
