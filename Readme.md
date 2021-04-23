@@ -14,7 +14,7 @@ Repository degli esercizi di Progetto e Sviluppo di Sistemi in Tempo Reale.
 
 ## Contenuto della Repository
 
-- *Codice_Esempi_Prof.*  
+- *Codice_Esempi_Prof./*  
     Contiene il codice messo a disposizione del docente
-- *Esercizi_ed_Esperimenti*  
+- *Esercizi_ed_Esperimenti/*  
     Contiene il codice dal sottoscritto realizzato. Non presenta separazione tra gli esercizi assegnati a lezione ed eventuali esperimenti.
