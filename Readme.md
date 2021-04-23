@@ -18,3 +18,5 @@ Repository degli esercizi di Progetto e Sviluppo di Sistemi in Tempo Reale.
     Contiene il codice messo a disposizione del docente
 - *Esercizi_ed_Esperimenti/*  
     Contiene il codice dal sottoscritto realizzato. Non presenta separazione tra gli esercizi assegnati a lezione ed eventuali esperimenti.
+- *HWx/*  
+    Contiene il codice delle esercitazioni pratiche.
