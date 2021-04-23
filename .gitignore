@@ -2,3 +2,7 @@
 .symvers
 .order
 .tmp_version/
+.rt_task*
+*.ko
+*.o
+*.mod.c

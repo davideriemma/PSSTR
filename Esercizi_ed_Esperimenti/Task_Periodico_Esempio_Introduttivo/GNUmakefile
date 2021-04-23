@@ -29,7 +29,7 @@ clean:
 #process.o: process.c scope
 #	$(CC) $(MODULE_CFLAGS) -c $<
 
-scope: scope.c
+buddy_task: buddy_task.c
 	$(CC) -o $@ $<
 
 
