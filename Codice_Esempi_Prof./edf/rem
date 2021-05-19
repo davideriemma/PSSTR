@@ -1,3 +1,0 @@
-rmmod edf_rt
-rmmod rtai_sched
-rmmod rtai_hal

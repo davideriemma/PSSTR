@@ -1,3 +1,0 @@
-arch=`rtai-config --linux-version`
-rmmod rt_process
-./remod
