@@ -17,7 +17,6 @@ void power_presence_checker_init_struct(power_failure_t * data)
 
 unsigned int has_power_failed(void) //simulates random power failure, then returns 1 if the power has failed
 {
-    //TBD: vedere se funziona -> Shifta a sinistra finquando non arriva a 0. Fa questo per 64 volte
     static unsigned int i = 1;
     i <<= 1;
     return i;
@@ -44,7 +43,7 @@ void * power_presence_checker(void * dummy)
         rt_make_hard_real_time();
 
         /*task vero e proprio*/
-        while(!has_power_failed()){/*do nothing*/}
+        while(has_power_failed() != (1 << 24)){/*do nothing*/}
 
         /*TBD: power has failed, procedi -> done*/
         data->flag = 1;

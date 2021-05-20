@@ -1,3 +1,4 @@
+.idea/
 .vscode/
 .symvers
 .order
@@ -6,3 +7,7 @@
 *.ko
 *.o
 *.mod.c
+*.xml
+CMakeLists.txt
+cmake-build-debug/
+RTAI-Include/
