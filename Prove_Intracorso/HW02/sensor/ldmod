@@ -30,3 +30,8 @@ $insmod $MODULES/rtai_sched.ko;
 sync
 $insmod $MODULES/rtai_shm.ko;
 sync
+$insmod $MODULES/rtai_sem.ko;
+sync
+$insmod $MODULES/rtai_mbx.ko;
+sync
+$insmod $MODULES/rtai_msg.ko;

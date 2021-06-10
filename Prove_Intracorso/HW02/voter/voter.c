@@ -12,6 +12,9 @@
 #include <rtai_shm.h>
 #include <rtai_sched.h>
 #include <rtai_sem.h> //inclusione dell'header per l'utilizzo delle primitive semaforiche
+#include <rtai_mbx.h>
+
+#include "../messages.h"
 
 #include "parameters.h"
 
@@ -24,6 +27,10 @@
 
 static struct raw_sensors_data * raw_data;
 static struct processed_sensors_data * processed_data;
+static struct tbs_mbx_message * mbxMessage;
+static struct sensor_is_broken * sensorIsBroken;
+
+static MBX * tbs_mbx, * broken_mbx;
 
 RT_TASK tasks_id[N_TASKS]; /*vettore degli identificativi dei task*/
 
@@ -47,6 +54,10 @@ static void (*tasks_code[N_TASKS])(long) = {altitude, speed, temp};
 void temperature(long dummy)
 {
 	unsigned int cont = TRUE;
+	static unsigned int full_stop = FALSE;
+
+	struct tbs_mbx_message message; //messaggio da inviare al TBS
+	struct sensor_is_broken sensorIsBroken1;
 
 	int i; //dichiarazione compatibile del contatore
 
@@ -62,24 +73,45 @@ void temperature(long dummy)
 	for(i = 0; i < TEMP_SIZE && cont; ++i)
 	{
 		/*found 0?*/
-		if(!(raw_data->temperature[i]))
+		if(!(raw_data->temperature[i])&& !full_stop)
 		{
+		    /*inserimento dei dati nel messaggio*/
+		    message.task_id = TBS_TEMP_ID;
+		    /*si è verificato un errore di stuck at zero, segnalalo sulla mailbox*/
+            rt_mbx_send(tbs_mbx, (void *) &message, sizeof(struct tbs_mbx_message));
 			/*ritorna l'elemento in posizione successiva allo zero, che è sicuramente buona. 
 			Utilizza l'aritmetica modulare per eviter errore di overflow*/
 			processed_data->temperature = raw_data->temperature[++i % TEMP_SIZE];
 			cont = FALSE; /*risparmiamo iterazioni inutili*/
 		}
+		else
+        {
+		    processed_data->temperature = -1;
+            /*inserimento dei dati nel messaggio*/
+            message.task_id = TBS_TEMP_ID;
+            /*si è verificato un errore di stuck at zero, segnalalo sulla mailbox*/
+            rt_mbx_send(tbs_mbx, (void *) &message, sizeof(struct tbs_mbx_message));
+        }
 	}
 
 	/*operazione completata, rilascio del semaforo*/
 	rt_sem_signal(processed_data->processed_sensor_data_lock);
 	rt_sem_signal(raw_data->raw_sensor_data_lock);
+
+	/*TODO: ho ricevuto il messaggio di terminazione??*/
+    rt_mbx_receive_if(broken_mbx, (void *)&sensorIsBroken1, sizeof(struct sensor_is_broken));
+    if(sensorIsBroken1.task_id == TBS_TEMP_ID)
+        full_stop = TRUE;
 	return;
 }
 
 void speed(long dummy)
 {
 	unsigned int cont = TRUE;
+    static unsigned int full_stop = FALSE;
+
+	struct tbs_mbx_message message;
+    struct sensor_is_broken sensorIsBroken1;
 
 	int i;//dichiarazione compatibile del contatore
 	//bloccaggio dei semafori, vedi funzione 'temperature()'
@@ -91,15 +123,33 @@ void speed(long dummy)
 		a capo quando l'array termina di scorrere, quindi è garantito che questi due valori esistano consecutivi, 
 		in quanto ciò è garantito per hp*/
 		/*due valori consecutivi uguali?*/
-		if(raw_data->speeds[i] == raw_data->speeds[++i % SPEED_SIZE])
+		if(raw_data->speeds[i] == raw_data->speeds[++i % SPEED_SIZE] && !full_stop)
 		{
+            /*inserimento dei dati nel messaggio*/
+            message.task_id = TBS_SPEED_ID;
+            /*si è verificato un errore, segnalalo sulla mailbox*/
+            rt_mbx_send(tbs_mbx, (void *) &message, sizeof(struct tbs_mbx_message));
+            /*prosegui con la ricerca del valore corretto*/
 			processed_data->speed = raw_data->speeds[i]; /*se sì, allora il gioco è fatto, questa è quella corretta*/
 			cont = FALSE;
 		}
+		else
+        {
+            processed_data->speed = -1;
+            /*inserimento dei dati nel messaggio*/
+            message.task_id = TBS_SPEED_ID;
+            /*si è verificato un errore di stuck at zero, segnalalo sulla mailbox*/
+            rt_mbx_send(tbs_mbx, (void *) &message, sizeof(struct tbs_mbx_message));
+        }
 	}
 	/*operazione completata, rilascio del semaforo*/
 	rt_sem_signal(processed_data->processed_sensor_data_lock);
 	rt_sem_signal(raw_data->raw_sensor_data_lock);
+    /*ho ricevuto il messaggio di terminazione??*/
+    rt_mbx_receive_if(broken_mbx, (void *)&sensorIsBroken1, sizeof(struct sensor_is_broken));
+    if(sensorIsBroken1.task_id == TBS_SPEED_ID)
+        full_stop = TRUE;
+
 	return;
 }
 
@@ -109,6 +159,10 @@ void altitude(long dummy)
 	  - non è sempre detto che ci sia uno zero.*/
 
 	unsigned int cont =  TRUE;
+    static unsigned int full_stop = FALSE;
+
+	struct tbs_mbx_message message;
+    struct sensor_is_broken sensorIsBroken1;
 
 	/*devi trovare solo due misure consecutive, diverse da 0: 
 	G b G b G
@@ -130,16 +184,34 @@ void altitude(long dummy)
 
 	for(i = 0; i < ALTITUDE_SIZE && cont; ++i)
 	{
-		if(!(raw_data->altitudes[i]) && raw_data->altitudes[i] == raw_data->altitudes[++i % ALTITUDE_SIZE])
+		if(!(raw_data->altitudes[i]) && raw_data->altitudes[i] == raw_data->altitudes[++i % ALTITUDE_SIZE] && !full_stop)
 		{
+            /*inserimento dei dati nel messaggio*/
+            message.task_id = TBS_ALT_ID;
+            /*si è verificato un errore, segnalalo sulla mailbox*/
+            rt_mbx_send(tbs_mbx, (void *) &message, sizeof(struct tbs_mbx_message));
+            /*inserisci il valore corretto*/
 			processed_data->altitude = raw_data->altitudes[i];
 			cont = FALSE;
 		}
+		else
+        {
+            processed_data->altitude = -1;
+            /*inserimento dei dati nel messaggio*/
+            message.task_id = TBS_ALT_ID;
+            /*si è verificato un errore di stuck at zero, segnalalo sulla mailbox*/
+            rt_mbx_send(tbs_mbx, (void *) &message, sizeof(struct tbs_mbx_message));
+        }
 	}
 
     /*operazione completata, rilascio del semaforo*/
     rt_sem_signal(processed_data->processed_sensor_data_lock);
     rt_sem_signal(raw_data->raw_sensor_data_lock);
+
+    /*ho ricevuto il messaggio di terminazione??*/
+    rt_mbx_receive_if(broken_mbx, (void *)&sensorIsBroken1, sizeof(struct sensor_is_broken));
+    if(sensorIsBroken1.task_id == TBS_ALT_ID)
+        full_stop = TRUE;
 
 	return;
 }
@@ -164,6 +236,8 @@ int init_module(void)
 	processed_data = rtai_kmalloc(PROC_SEN_SHM, sizeof(struct processed_sensors_data));
 	/*Semaphore Inizializazion*/
 	processed_data->processed_sensor_data_lock = rt_typed_named_sem_init(PROC_SEN_SEM, 1, RES_SEM); //priority inheritance accessed semaphore
+	/*mbx initialization*/
+	tbs_mbx = rt_typed_mbx_init(TBS_MBX_NAME, sizeof(struct tbs_mbx_message), PRIO_Q);
 	//TODO: avvio task periodici
 	now = rt_get_time();
 
@@ -195,5 +269,8 @@ void cleanup_module(void)
 	/*eliminazione delle memorie condivise*/
 	rtai_kfree(RAW_SEN_SHM);
 	rtai_kfree(PROC_SEN_SHM);
+	/*rimozione mailbox*/
+    rt_mbx_delete(tbs_mbx);
+    rt_mbx_delete(broken_mbx);
 	
 }

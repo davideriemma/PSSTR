@@ -10,3 +10,8 @@ $rmmod rtai_sched
 sync
 $rmmod rtai_hal
 sync
+$rmmod $MODULES/rtai_sem.ko;
+sync
+$rmmod $MODULES/rtai_mbx.ko;
+sync
+$rmmod $MODULES/rtai_msg.ko;

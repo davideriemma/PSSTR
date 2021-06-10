@@ -12,7 +12,7 @@
 #include <signal.h>
 #include "parameters.h"
 
-#define CPUMAP 0x1
+#define CPUMAP 0x00 //modifica della cpu per far eseguire tutti sulla cpu 0
 
 #define NUM_TASKS
 
