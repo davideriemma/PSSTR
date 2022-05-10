@@ -10,7 +10,7 @@ Repository degli esercizi di Progetto e Sviluppo di Sistemi in Tempo Reale.
  
 - *Abbiate cura di compilare o a mano, o nel Makefile il buddy task*
 
-- *Commentate **sempre** la sfaccimma di codice*
+- *Commentate **sempre** il codice*
 
 ## Contenuto della Repository
 
